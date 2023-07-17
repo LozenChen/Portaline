@@ -1,6 +1,7 @@
 
 using Celeste;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Portaline;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Monocle;
@@ -266,7 +267,10 @@ public class PortalEntity : Entity {
 
 public static class Vector2Extension  {
     public static Vector2 RotatePI(this Vector2 vec, int n) {
-        return n switch {
+        if (PortalineModuleSettings.RotateFeature) {
+            return vec.Rotate((float)Math.PI / 2f * n);
+        } else 
+            return n switch {
             0 => vec,
             1 => new Vector2(-vec.Y, vec.X),
             2 => -vec,
