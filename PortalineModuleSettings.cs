@@ -14,7 +14,7 @@ namespace Celeste.Mod.Portaline {
         public ButtonBinding ShootOrangePortal { get; set; }
 
         [DefaultButtonBinding(Buttons.RightStick, Keys.Q)]
-        public ButtonBinding RemovePortals { get; set; }
+        public ButtonBinding RemovePortals { get; set;}
 
         [SettingSubText("How to implement Vector2.Rotate((float) Math.PI / 2f). If true then it will be imprecise.")]
         public static bool RotateFeature { get; set; } = true;
