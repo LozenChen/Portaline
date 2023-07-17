@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework.Input;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Celeste.Mod.Portaline {
     [SettingName("Portaline Settings")]
@@ -18,5 +19,8 @@ namespace Celeste.Mod.Portaline {
 
         [SettingSubText("How to implement Vector2.Rotate((float) Math.PI / 2f). If true then it will be imprecise.")]
         public static bool RotateFeature { get; set; } = true;
+
+        [SettingSubText("DebugRender AfterImage of PortalBullet.")]
+        public static bool ShowAfterImage { get; set; } = true;
     }
 }

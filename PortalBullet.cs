@@ -1,5 +1,6 @@
 using Celeste;
 using Celeste.Mod.Entities;
+using Celeste.Mod.Portaline;
 using Microsoft.Xna.Framework;
 using Monocle;
 using System;
@@ -15,6 +16,11 @@ public class PortalBullet : Actor {
     private readonly Collision onCollideH;
     private readonly Collision onCollideV;
 
+    private bool building = false;
+    private Hitbox buildDataBefore;
+    private Hitbox buildDataAfter;
+    private Vector2 lastPosition;
+    private Vector2 halfway;
 
     public PortalBullet(Vector2 position, Vector2 velocity, bool isOrangePortal, Actor owner) : base(position) {
         Position = position;
@@ -33,8 +39,10 @@ public class PortalBullet : Actor {
 
     public override void Update() {
         if (dead) return;
-
+        lastPosition = Position;
         MoveH(velocity.X, onCollideH);
+        if (dead) return;
+        halfway = Position;
         MoveV(velocity.Y, onCollideV);
 
         Camera camera = (Scene as Level).Camera;
@@ -50,6 +58,43 @@ public class PortalBullet : Actor {
         // owner can die and be removed, so scene can be null
         (owner?.Scene as Level)?.Particles.Emit(ParticleTypes.SparkyDust, Position, isOrangePortal ? Color.Orange : Color.Aqua);
         base.Render();
+    }
+
+    public void DebugRenderAt(Vector2 position, Camera camera, Color color) {
+        Vector2 orig = Position;
+        Position = position;
+        Collider.Render(camera, color);
+        Position = orig;
+    }
+
+    public override void DebugRender(Camera camera) {
+        if (PortalineModuleSettings.ShowAfterImage) {
+            if (halfway != Position) {
+                DebugRenderAt(halfway, camera, Color.Red * 0.5f);
+            }
+
+            if (lastPosition != halfway) {
+                DebugRenderAt(lastPosition, camera, Color.Red * 0.2f);
+            }
+        }
+
+        if (building) {
+            Collider.Render(camera, Color.Yellow);
+            if (buildDataBefore.AbsolutePosition == buildDataAfter.AbsolutePosition) {
+                Monocle.Draw.HollowRect(buildDataBefore, Color.Yellow);
+            }
+            else {
+                Monocle.Draw.HollowRect(buildDataBefore, Color.Green * 0.5f);
+                Monocle.Draw.HollowRect(buildDataAfter, Color.Yellow);
+            }
+            return;
+        }
+        if (dead){
+            Collider.Render(camera, Color.White);
+        }
+        else {
+            Collider.Render(camera, Color.Red);
+        }
     }
 
     private void OnCollideH(CollisionData data) {
@@ -96,6 +141,9 @@ public class PortalBullet : Actor {
         portalPos = new Vector2((float)Math.Floor(portalPos.X), (float)Math.Floor(portalPos.Y));
 
         PortalEntity newPortal = new(portalPos, orientation, isOrangePortal, data.Hit as Solid);
+        buildDataAfter = newPortal.Collider as Hitbox;
+        buildDataBefore = buildDataAfter.Clone() as Hitbox;
+        building = true;
 
         Kill();
 
