@@ -39,7 +39,7 @@ public class PortalBullet : Actor {
 
     public override void Update() {
         if (dead) return;
-        lastPosition = Position;
+        lastPosition = halfway = Position;
         MoveH(velocity.X, onCollideH);
         if (dead) return;
         halfway = Position;
@@ -141,8 +141,8 @@ public class PortalBullet : Actor {
         portalPos = new Vector2((float)Math.Floor(portalPos.X), (float)Math.Floor(portalPos.Y));
 
         PortalEntity newPortal = new(portalPos, orientation, isOrangePortal, data.Hit as Solid);
+        buildDataBefore = new Hitbox(newPortal.Collider.Width, newPortal.Collider.Height, newPortal.Collider.AbsoluteX, newPortal.Collider.AbsoluteY);
         buildDataAfter = newPortal.Collider as Hitbox;
-        buildDataBefore = buildDataAfter.Clone() as Hitbox;
         building = true;
 
         Kill();
