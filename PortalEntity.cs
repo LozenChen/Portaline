@@ -57,16 +57,16 @@ public class PortalEntity : Entity {
             if (opposingPortal == null) return false;
 
             // check if opposing portal is obstructed
-            float oriRotation = 0;
+            int oriRotation = 0;
 
             switch (opposingPortal.orientation) {
                 case 0: oriRotation = 0; break;
-                case 1: oriRotation = (float)Math.PI; break;
-                case 2: oriRotation = (float)Math.PI * 0.5f; break;
-                case 3: oriRotation = (float)Math.PI * 1.5f; break;
+                case 1: oriRotation = 2; break;
+                case 2: oriRotation = 1; break;
+                case 3: oriRotation = 3; break;
             }
 
-            Rectangle frontRect = opposingPortal.RectFromVectors(new Vector2(2, 0).Rotate(oriRotation), new Vector2(3, 16).Rotate(oriRotation));
+            Rectangle frontRect = opposingPortal.RectFromVectors(new Vector2(2, 0).RotatePI(oriRotation), new Vector2(3, 16).RotatePI(oriRotation));
 
             if (Scene.CollideFirst<Solid>(frontRect) != null) return false;
 
@@ -87,12 +87,12 @@ public class PortalEntity : Entity {
             if (orientation > 1 && opposingPortal.orientation < 2) {
                 if ((opposingPortal.orientation == 0 && orientation == 3) ||
                     (opposingPortal.orientation == 1 && orientation == 2)) {
-                    player.Speed = player.Speed.Rotate((float)Math.PI / -2);
-                    player.DashDir = player.DashDir.Rotate((float)Math.PI / -2);
+                    player.Speed = player.Speed.RotatePI(-1);
+                    player.DashDir = player.DashDir.RotatePI(-1);
                 }
                 else {
-                    player.Speed = player.Speed.Rotate((float)Math.PI / 2);
-                    player.DashDir = player.DashDir.Rotate((float)Math.PI / 2);
+                    player.Speed = player.Speed.RotatePI(1);
+                    player.DashDir = player.DashDir.RotatePI(1);
                 }
                 player.Facing = player.Speed.X >= 0 ? Facings.Right : Facings.Left;
             }
@@ -101,12 +101,12 @@ public class PortalEntity : Entity {
             if (orientation < 2 && opposingPortal.orientation > 1) {
                 if ((opposingPortal.orientation == 2 && orientation == 0) ||
                     (opposingPortal.orientation == 3 && orientation == 1)) {
-                    player.Speed = player.Speed.Rotate((float)Math.PI / -2);
-                    player.DashDir = player.DashDir.Rotate((float)Math.PI / -2);
+                    player.Speed = player.Speed.RotatePI(-1);
+                    player.DashDir = player.DashDir.RotatePI(-1);
                 }
                 else {
-                    player.Speed = player.Speed.Rotate((float)Math.PI / 2);
-                    player.DashDir = player.DashDir.Rotate((float)Math.PI / 2);
+                    player.Speed = player.Speed.RotatePI(1);
+                    player.DashDir = player.DashDir.RotatePI(1);
                 }
                 player.Facing = player.Speed.X >= 0 ? Facings.Right : Facings.Left;
             }
@@ -135,21 +135,21 @@ public class PortalEntity : Entity {
             return false;
         }
 
-        float oriRotation = 0;
+        int oriRotation = 0;
 
         switch (orientation) {
             case 0: oriRotation = 0; break;
-            case 1: oriRotation = (float)Math.PI; break;
-            case 2: oriRotation = (float)Math.PI * 0.5f; break;
-            case 3: oriRotation = (float)Math.PI * 1.5f; break;
+            case 1: oriRotation = 2; break;
+            case 2: oriRotation = 1; break;
+            case 3: oriRotation = 3; break;
         }
 
         for (int i = 0; i < 100; i++) {
             // obstruction (stuff in front of the portal)
             bool noObstruction = false;
 
-            Rectangle frontLeft = RectFromVectors(new Vector2(2, -4).Rotate(oriRotation), new Vector2(3, 8).Rotate(oriRotation));
-            Rectangle frontRight = RectFromVectors(new Vector2(2, 4).Rotate(oriRotation), new Vector2(3, 8).Rotate(oriRotation));
+            Rectangle frontLeft = RectFromVectors(new Vector2(2, -4).RotatePI(oriRotation), new Vector2(3, 8).RotatePI(oriRotation));
+            Rectangle frontRight = RectFromVectors(new Vector2(2, 4).RotatePI(oriRotation), new Vector2(3, 8).RotatePI(oriRotation));
 
             Solid frontLeftSolid = scene.CollideFirst<Solid>(frontLeft);
             Solid frontRightSolid = scene.CollideFirst<Solid>(frontRight);
@@ -162,17 +162,17 @@ public class PortalEntity : Entity {
                 return false;
             }
             else if (frontLeftSolid != null) {
-                Position += new Vector2(0, 1).Rotate(oriRotation);
+                Position += new Vector2(0, 1).RotatePI(oriRotation);
             }
             else {
-                Position -= new Vector2(0, 1).Rotate(oriRotation);
+                Position -= new Vector2(0, 1).RotatePI(oriRotation);
             }
 
             // off-surface (portal not being completely sticked to a surface)
             bool noOffSurface = false;
 
-            Rectangle backLeft = RectFromVectors(new Vector2(-2, -8).Rotate(oriRotation), new Vector2(3, 2).Rotate(oriRotation));
-            Rectangle backRight = RectFromVectors(new Vector2(-2, 8).Rotate(oriRotation), new Vector2(3, 2).Rotate(oriRotation));
+            Rectangle backLeft = RectFromVectors(new Vector2(-2, -8).RotatePI(oriRotation), new Vector2(3, 2).RotatePI(oriRotation));
+            Rectangle backRight = RectFromVectors(new Vector2(-2, 8).RotatePI(oriRotation), new Vector2(3, 2).RotatePI(oriRotation));
 
             Solid backLeftSolid = scene.CollideFirst<Solid>(backLeft);
             Solid backRightSolid = scene.CollideFirst<Solid>(backRight);
@@ -185,10 +185,10 @@ public class PortalEntity : Entity {
                 return false;
             }
             else if (backLeftSolid == null) {
-                Position += new Vector2(0, 1).Rotate(oriRotation);
+                Position += new Vector2(0, 1).RotatePI(oriRotation);
             }
             else {
-                Position -= new Vector2(0, 1).Rotate(oriRotation);
+                Position -= new Vector2(0, 1).RotatePI(oriRotation);
             }
 
             if (noObstruction && noOffSurface) {
@@ -262,4 +262,19 @@ public class PortalEntity : Entity {
         dead = true;
         RemoveSelf();
     }
+}
+
+public static class Vector2Extension  {
+    public static Vector2 RotatePI(this Vector2 vec, int n) {
+        return n switch {
+            0 => vec,
+            1 => new Vector2(-vec.Y, vec.X),
+            2 => -vec,
+            3 => new Vector2(vec.Y, -vec.X),
+            -1 => new Vector2(vec.Y, -vec.X),
+            4 => vec,
+            _ => RotatePI(vec, n % 4 + 4),
+        };
+    }
+    // bugfix: if use Vector2.Rotate, then left dash rotate to up dash, but can't wall bounce coz DashDir.X = 0.000001 not zero!
 }
